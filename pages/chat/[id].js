@@ -3,7 +3,7 @@ import React from 'react'
 import styled from 'styled-components';
 import Sidebar from '../../components/Sidebar';
 import ChatScreen from '../../components/ChatScreen';
-import { collection,doc,docs, getDocs,getDoc ,serverTimestamp, setDoc, updateDoc} from 'firebase/firestore';
+import { collection,doc,docs, getDocs,getDoc ,serverTimestamp, setDoc, updateDoc, query, orderBy} from 'firebase/firestore';
 import { db } from '../../firebase';
 import {useAuthState} from "react-firebase-hooks/auth";
 import getRecipientEmail from '../../utils/getRecipientEmail';
@@ -12,11 +12,12 @@ import {auth} from '../../firebase';
 function Chat({chat, messages}) {
     const [user]= useAuthState(auth);
     const usersDoc = doc(db, 'users', user.uid);
+    const chatObj = JSON.parse(chat);
 
   return (
     <Container>
         <Head>
-            <title>Chat with {getRecipientEmail(chat.users, user)}</title>
+            <title>Chat with {getRecipientEmail(chatObj.users, user)}</title>
         </Head>
         <Sidebar/>
         <ChatContainer>
@@ -35,7 +36,7 @@ export async function getServerSideProps(context) {
     // // prep messages on the server
     // const messagesRes = await collection(ref,"messages").get();
       
-    const messagesRes = await getDocs(collection(ref,"messages"));
+    const messagesRes = await getDocs(query(collection(ref,"messages"),orderBy("timestamp","asc")));
 
     const messages = await messagesRes.docs.map(doc => ({
         id: doc.id,

@@ -8,7 +8,7 @@ import { Avatar, Button, IconButton } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { useCollection } from 'react-firebase-hooks/firestore';
-import { collection, query, where, getDoc, getDocs,doc, setDoc,serverTimestamp, updateDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, where, getDoc, getDocs,doc, setDoc,serverTimestamp, updateDoc, Timestamp, orderBy } from 'firebase/firestore';
 import Message from './Message';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import MicIcon from '@mui/icons-material/Mic';
@@ -21,7 +21,7 @@ function ChatScreen({chat, messages,users}) {
   const [input,setInput] = useState("");
   const endOfMessagesRef = useRef(null);
   const router = useRouter();
-  const [msgSnap] = useCollection(collection(db,"chats",router.query.id,"messages"));
+  const [msgSnap] = useCollection(query(collection(db,"chats",router.query.id,"messages"),orderBy("timestamp", "asc")));
   const chatObj = JSON.parse(chat);
   
   // const msgDoc = getDocs(collection(db,"chats",router.query.id,"messages")); 
@@ -29,6 +29,9 @@ function ChatScreen({chat, messages,users}) {
   // const eachMsgTime = msgDoc.forEach((doc)=>{
   //   return serverTimestamp(doc);
   // })
+
+  // const [recipientSnapshot] = useCollection(collection(db, "users")
+  // );
 
   const [recipientSnapshot] = useCollection(
     query(collection(db, "users"), where("email", "==", getRecipientEmail(chatObj.users,user)))
@@ -41,7 +44,16 @@ function ChatScreen({chat, messages,users}) {
       })
   };
 
-  const showMessages  =  () =>{
+  // const msgTime = msgSnap?.docs.forEach(doc => 
+  //   updateDoc(doc,{ msgTimeNew: serverTimestamp()}));
+
+  // const msgDocRef = doc(db,"chats",router.query.id,"messages", msgId);
+
+  const showMessages  = () =>{
+
+  //   const updateTimestamp = await updateDoc(msgDocRef, {
+  //     timestamp: serverTimestamp()
+  // });
       if (msgSnap) {
         return msgSnap.docs.map(message=>(
         
@@ -50,22 +62,26 @@ function ChatScreen({chat, messages,users}) {
               user = {message.data().user}
               message = {{
                 ...message.data(),
-                timestamp: serverTimestamp(),
+                timestamp: message.data().timestamp?.toDate().toString(),
+                // timestamp: new Date(message.data().toDate())
               }}
-            />
+             
+            /> 
+            
         ));
       } else{
         return JSON.parse(messages).map(message =>(
-            <Message key={message.id} user={message.user} message={message}/>
+            <Message key={message.id} user={message.user} message={message}  />
         ));
       }
   }
 
-
+  
+  // const timestamp = JSON.parse(timestamp);
   const usersDoc = doc(db, 'users', user.uid);
 
-  const date = new Date();
-  const timeSeen = date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+  // const date = new Date();
+  // const timeSeen = date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
 
     // const myTime = JSON.parse(JSON.stringify(updatedTimestamp));
     
@@ -87,6 +103,7 @@ function ChatScreen({chat, messages,users}) {
     //   user: user.email,
     //   photoURL: user.photoURL,
     // } )));
+    // const msgOrder = query(collection(db,"chats", router.query.id, "messages"),orderBy("timestamp", "asc"));
 
     setDoc(doc(collection(db,"chats", router.query.id, "messages")),{
       timestamp: serverTimestamp(),
@@ -185,8 +202,8 @@ const HeaderInfo = styled.div`
     flex: 1;
 
     >h4{
-       margin-bottom: 6px;
-      
+       margin-bottom: -6px;
+  
     }
     >p{
       font-size: 14px;
@@ -199,9 +216,9 @@ const HeaderIcons = styled.div`
 `;
 
 const MessageContainer = styled.div`
-      min-height: 90vh;
+      min-height: 80vh;
       background-color: #e5ded8;
-      padding: 30px;
+      padding: 40px;
      
 `;
 const EndOfMessages = styled.div``;

@@ -21,7 +21,7 @@ function Sidebar() {
     // const userChatSnap = getDoc(userChatRef);
 
     const createChat = ()=> {
-        const input = prompt('Please enter email address');
+        const input = prompt('Please enter email address to create a chat.');
         if (!input) return null;
         if(EmailValidator.validate(input) && !chatAlreadyExists(input) && input !== user.email){
             //Add chat into DB chats collection
@@ -44,10 +44,10 @@ function Sidebar() {
     <Container>
         <Header>
             <UserAvatar src={user.photoURL || email.charAt(0)} onClick={()=>signOut(auth)}/>
-           
+            <p>{user.email}</p>
             <IconsContainer>
                 <IconButton>
-                <ChatIcon/>
+                <ChatIcon onClick={createChat}/>
                 </IconButton>
                 <IconButton>
                 <MoreVertIcon/>
@@ -78,8 +78,8 @@ const Container = styled.div`
     flex: 0.45;
     border-right: 1px solid whitesmoke;
     height: 100vh;
-    min-width: 300px;
-    max-width: 350px;
+    min-width: 350px;
+    max-width: 450px;
     overflow-y: scroll;
     ::-webkit-scrollbar {
         display: none;
@@ -99,6 +99,14 @@ const Header = styled.div`
     padding: 15px;
     height: 80px;
     border-bottom: 1px solid whitesmoke;
+
+    >p {
+        margin-left:-80px;
+        color: gray;
+        font-size: 16px;
+        padding: 10px;
+        box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    }
 `;
 
 const UserAvatar = styled(Avatar)`
@@ -123,6 +131,11 @@ const SearchInput = styled.input`
     outline-width: 0;
     flex: 1;
     border: none;
+    border-radius: 10px;
+    background-color: whitesmoke;
+    height: 40px;
+    padding: 15px;
+    margin-left: 7px;
 `;
 
 const SidebarButton = styled(Button)`
@@ -132,4 +145,5 @@ const SidebarButton = styled(Button)`
         border-top: 1px solid whitesmoke;
         border-bottom: 1px solid whitesmoke;
     }
+   
 `;

@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { auth } from '../firebase';
 
 
-function Message({user, message}) {
+function Message({user, message, timestamp}) {
   const [userLoggedIn] = useAuthState(auth);
   const TypeOfMessage = user === userLoggedIn.email ? Sender : Reciever;
 
@@ -13,7 +13,7 @@ function Message({user, message}) {
     <Container>
         <TypeOfMessage>{message.message}
           <Timestamp>
-          {message.timestamp? moment(message.timestamp).format("LT"):"..."}
+          {message.timestamp? moment(message.timestamp).format("LTS"):"..."}
           </Timestamp>
           
         </TypeOfMessage>

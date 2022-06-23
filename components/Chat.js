@@ -4,7 +4,7 @@ import styled from "styled-components";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth,db} from "../firebase";
 import getRecipientEmail from '../utils/getRecipientEmail';
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs,orderBy } from "firebase/firestore";
 import {useCollection} from "react-firebase-hooks/firestore";
 import {useRouter} from "next/router"
 
@@ -45,9 +45,11 @@ const Container = styled.div`
     cursor: pointer;
     pad: 20px;
     word-break: break-word;
+    margin-left: 20px;
     :hover{
       background-color: #e9eaeb;
     }
+    
 `;
 
 const UserAvatar  = styled(Avatar)`
